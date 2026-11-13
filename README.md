@@ -1,5 +1,3 @@
-# MMC-CL-08-26-Enumeration-Choice
-Enumeration
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MMC CL 08-26 — Enumeration Practice Questionnaire</title><style>
 :root{--bg:#0b1020;--panel:#121a2d;--panel2:#17223a;--text:#f3f6fb;--muted:#aab5ca;--accent:#6ea8fe;--good:#36d399;--bad:#ff6b6b;--line:#283653}
