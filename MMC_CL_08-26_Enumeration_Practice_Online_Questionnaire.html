@@ -1,0 +1,64 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MMC CL 08-26 — Enumeration Practice Questionnaire</title><style>
+:root{--bg:#0b1020;--panel:#121a2d;--panel2:#17223a;--text:#f3f6fb;--muted:#aab5ca;--accent:#6ea8fe;--good:#36d399;--bad:#ff6b6b;--line:#283653}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#080d19,#10182b 55%,#0b1020);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
+.container{max-width:1000px;margin:0 auto;padding:28px 18px 50px}header,.card,.final{background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 30px #0004}
+header{padding:24px 26px;margin-bottom:18px}h1{margin:0 0 8px;font-size:28px}.sub{color:var(--muted);line-height:1.5}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}button{background:var(--panel2);border:1px solid #385078;color:var(--text);border-radius:10px;padding:11px 14px;font-size:14px;cursor:pointer}.primary{background:#1e4f91;border-color:#3979ca}
+.progress-wrap{margin-top:18px}.status{display:flex;justify-content:space-between;color:var(--muted);font-size:13px;margin-bottom:7px}.progress{height:10px;background:#202b43;border-radius:999px;overflow:hidden}.progressbar{height:100%;width:0;background:var(--accent);transition:.2s}
+.card{padding:24px;margin:16px 0}.qhead{display:flex;gap:12px;align-items:flex-start}.num{font-weight:800;color:var(--accent);min-width:38px}.question{font-size:18px;font-weight:650;line-height:1.45}
+.hint{color:var(--muted);font-size:13px;margin:10px 0 16px 50px}.answer-grid{display:grid;gap:10px;margin-left:50px}.answer-row{display:flex;gap:10px;align-items:center}.answer-row span{color:var(--muted);width:28px;text-align:right;font-weight:700}
+input{flex:1;background:#0d1527;border:1px solid #344766;color:var(--text);border-radius:10px;padding:12px 13px;font-size:15px;outline:none}input:focus{border-color:var(--accent)}
+.result{display:none;margin:16px 0 0 50px;padding:14px;border-radius:12px;background:#0d1527;border:1px solid var(--line)}.result.good{border-color:#247b5c}.result.bad{border-color:#8b3545}.result-title{font-weight:800;margin-bottom:7px}.result small{color:var(--muted)}.correct-list{margin:8px 0 0;padding-left:20px}
+.final{display:none;padding:28px;text-align:center}.score{font-size:48px;font-weight:900;color:var(--accent);margin:8px 0}.breakdown{color:var(--muted);line-height:1.6}
+@media(max-width:650px){.container{padding:16px 10px}.card{padding:18px}.hint,.answer-grid,.result{margin-left:0}.question{font-size:16px}.answer-row span{width:20px}}
+</style></head><body><div class="container">
+<header><h1>MMC CL 08-26 — Enumeration Practice</h1><div class="sub">8 enumeration questions • Order-independent answer checking • Based strictly on the provided questions and answers</div>
+<div class="controls"><button id="submitBtn" class="primary">Submit & Grade</button><button id="resetBtn">New Random Order</button></div>
+<div class="progress-wrap"><div class="status"><span id="progressText">0/8 questions started</span><span>Enumeration Practice</span></div><div class="progress"><div class="progressbar" id="progressbar"></div></div></div></header>
+<main id="questions"></main><section class="final" id="final"><div>Final Score</div><div class="score" id="score">0/8</div>
+<div class="breakdown">Percentage: <b id="percent">0%</b><br>Each question is 1 point only when <b>all required answers</b> are present. Answer sequence is ignored.</div></section>
+</div><script>
+const QUESTIONS = [{"q": "Enumerate the five (5) Supply Cycle.", "answers": ["Requirement Determination", "Procurement", "Storage and Maintenance", "Distribution", "Disposal"]}, {"q": "Enumerate the four (4) Requirement Categories.", "answers": ["Manpower", "Facilities", "Materiel", "Logistic Services"]}, {"q": "Enumerate the three types of systematic errors.", "answers": ["Instrumental Error", "Environmental Error", "Observational Error"]}, {"q": "Enumerate the three types of calipers.", "answers": ["Vernier Caliper", "Dial Gauge Caliper", "Digital Caliper"]}, {"q": "How to use a fire extinguisher in order?", "answers": ["Pull the pin", "Aim the nozzle at the base of the fire", "Squeeze the lever", "Sweep side to side"]}, {"q": "Enumerate the five (5) types of hand grenades.", "answers": ["Fragmentation", "Offensive", "Illuminating", "Chemical", "Practice/Training"]}, {"q": "How weapons are operated?", "answers": ["Manual Operated", "Recoil Operated", "Gas Operated", "Blow Back Operated"]}, {"q": "Mission of an EORA, in order.", "answers": ["Investigating", "Diagnosing", "Locating", "Marking", "Reporting", "Protecting", "Assisting"]}];
+let current=[...QUESTIONS], submitted=false;
+function norm(s){return String(s||"").toLowerCase().trim().replace(/[.,;:!?]+$/g,"").replace(/\s+/g," ").replace(/[“”"']/g,"").replace(/\s*\/\s*/g,"/").replace(/\s*-\s*/g,"-")}
+function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function render(){
+ const root=document.getElementById("questions"); root.innerHTML="";
+ current.forEach((item,i)=>{
+  const card=document.createElement("section"); card.className="card"; card.id="q"+i;
+  let rows=item.answers.map((_,k)=>`<div class="answer-row"><span>${k+1}.</span><input autocomplete="off" data-q="${i}" data-a="${k}" placeholder="Enter answer ${k+1}"></div>`).join("");
+  card.innerHTML=`<div class="qhead"><div class="num">Q${i+1}</div><div class="question">${esc(item.q)}</div></div>
+  <div class="hint">Enter all required answers. <b>Answer order does not matter.</b></div>
+  <div class="answer-grid">${rows}</div><div class="result" id="r${i}"></div>`;
+  root.appendChild(card);
+ });
+ document.querySelectorAll("input").forEach(x=>x.addEventListener("input",updateProgress)); updateProgress();
+}
+function getInputs(i){return [...document.querySelectorAll(`input[data-q="${i}"]`)].map(x=>x.value)}
+function grade(i){
+ const given=getInputs(i).map(norm).filter(Boolean), correct=current[i].answers.map(norm), remaining=[...correct];
+ let matched=0;
+ for(const g of given){const idx=remaining.indexOf(g);if(idx>=0){matched++;remaining.splice(idx,1)}}
+ return {score:(matched===correct.length&&given.length===correct.length)?1:0,matched,missing:remaining};
+}
+function updateProgress(){
+ const filled=current.reduce((n,_,i)=>n+(getInputs(i).some(v=>v.trim())?1:0),0);
+ document.getElementById("progressText").textContent=`${filled}/${current.length} questions started`;
+ document.getElementById("progressbar").style.width=(filled/current.length*100)+"%";
+}
+function submitExam(){
+ if(submitted)return; submitted=true; let total=0;
+ current.forEach((item,i)=>{
+  const r=grade(i); total+=r.score; const box=document.getElementById("r"+i); box.style.display="block"; box.className="result "+(r.score?"good":"bad");
+  box.innerHTML=r.score?`<div class="result-title">✓ Correct</div><small>All required answers matched. Answer order was ignored.</small>`:
+  `<div class="result-title">✗ Incorrect / Incomplete</div><div><b>Matched:</b> ${r.matched}/${item.answers.length}</div><div><b>Missing:</b> ${r.missing.length?r.missing.map(esc).join(", "):"None"}</div><div><b>Correct answers:</b></div><ol class="correct-list">${item.answers.map(a=>`<li>${esc(a)}</li>`).join("")}</ol>`;
+ });
+ document.querySelectorAll("input").forEach(x=>x.disabled=true);
+ const pct=Math.round(total/current.length*1000)/10; document.getElementById("score").textContent=`${total}/${current.length}`; document.getElementById("percent").textContent=`${pct}%`;
+ document.getElementById("final").style.display="block"; document.getElementById("submitBtn").disabled=true; window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});
+}
+function resetExam(){submitted=false;current=shuffle([...QUESTIONS]);document.getElementById("final").style.display="none";document.getElementById("submitBtn").disabled=false;render();window.scrollTo({top:0,behavior:"smooth"})}
+document.getElementById("submitBtn").addEventListener("click",submitExam);document.getElementById("resetBtn").addEventListener("click",resetExam);current=shuffle(current);render();
+</script></body></html>
